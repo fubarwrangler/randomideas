@@ -1,7 +1,10 @@
 all: interp rsort
 
-interp:
+interp: interp.c
 	gcc -Wall -o interp interp.c
 
-rsort:
+rsort: rsort.c
 	gcc -Wall -o rsort rsort.c
+
+clean:
+	rm rsort interp
