@@ -11,6 +11,8 @@ static void _swp(void *a, void *b, size_t s)
     unsigned char t;
     size_t c = 0;
 
+    printf("Swap %p (%d) and %p (%d)\n", a, *(int *)a, b, *(int *)b);
+
     do {
 //        printf("%d Swap %x / %x: %x %x\n", c, p, q, *p, *q);
         t = *(unsigned char *)(a + c);
@@ -19,23 +21,24 @@ static void _swp(void *a, void *b, size_t s)
     } while(++c < s);
 }
 
-int part(void *p, size_t s, int low, int high, int idx, int (*cmp)(void *, void *))
+int part(void *p, size_t s, int low, int high, int (*cmp)(void *, void *))
 {
     void *k;
     int i, j;
+    int piv = (high + low) / 2;
 
-    k = (p + s * idx);
-    _swp(k, (p + s * (high - 1)), s);
-    k = (p + s * (high - 1));
+    printf("Pivot: %d (%d)\n", piv, *(int *)(p + piv * s));
 
-    for(i = low, j = low; i < high - 1; i++) {
-        if(cmp((p + s * i), k) < 0)   {
-            printf("Swap %p (%d) and %p (%d)\n", (p+s*i), *(int *)(p+s*i), (p+s*j), *(int *)(p+s*j));
+    _swp((p + s * piv), (p + s * (high)), s);
+    k = (p + s * (high));
+    j = low;
+    for(i = low; i < high; i++) {
+        if(cmp((p + s * i), k) <= 0)   {
             _swp((p + s * i), (p + s * j), s);
             j++;
         }
     }
-    _swp((p + s * j), (p + s * (high - 1)), s);
+    _swp((p + s * j), (p + s * (high)), s);
     return j;
 }
 
@@ -43,20 +46,20 @@ int _qs(void *p, size_t s, int low, int high, int (*cmp)(void *, void *))
 {
     int i;
     printf("Low: %d, High: %d\n", low, high);
-    if(low + 1 < high)  {
-        int pivot = (high + low) / 2, newpivot;
-        printf("\nPivot: %d (%d)", pivot, *(int *)(p + pivot * s));
+    if(low < high)  {
+        int pivot;
+        //
         printf("\nBefore Partitioning:\n");
         for(i = low; i < high; i++)      {
-            printf("%p: %d\n", (int *)(p + i * s), *(int *)(p + i * s));
+            printf("(%2d) %p: %d\n", i, (int *)(p + i * s), *(int *)(p + i * s));
         }
-        newpivot = part(p, s, low, high, pivot, cmp);
-        printf("\nAfter Partitioning, np=%d:\n", newpivot);
+        pivot = part(p, s, low, high, cmp);
+        printf("\nAfter Partitioning, np=%d:\n", pivot);
         for(i = low; i < high; i++)      {
-            printf("%p: %d\n", (int *)(p + i * s), *(int *)(p + i * s));
+            printf("(%2d) %p: %d\n", i, (int *)(p + i * s), *(int *)(p + i * s));
         }
-        _qs(p, s, low, newpivot - 1, cmp);
-        _qs(p, s, newpivot + 1, high, cmp);
+        _qs(p, s, low, pivot - 1, cmp);
+        _qs(p, s, pivot + 1, high, cmp);
     }
     return 0;
 }
@@ -65,7 +68,7 @@ int _qs(void *p, size_t s, int low, int high, int (*cmp)(void *, void *))
 void qsrt(void *p, size_t len, size_t nelm, int (*cmp)(void *, void *))
 {
     if(len > 1 && p != NULL)
-        _qs(p, len, 0, nelm, cmp);
+        _qs(p, len, 0, nelm - 1, cmp);
 }
 /*
 int _qsrt(void *r, size_t s, size_t len, int low, int high, int (*cmp)(void *, void *))
@@ -130,11 +133,12 @@ int main(int argc, char *argv[])
     //struct range r[30];
     int i;
 
-    //srand((unsigned)time(NULL));
-    srand(23212);
+    srand((unsigned)time(NULL) + getpid());
+    //srand(23212);
     for(i = 0; i < NUM; i++)      {
         //printf("%p: %d\n", &ints[i], ints[i]);
         ints[i] = rand() % 100;
+        printf("%d ", ints[i]);
     }
 
     //_swp(&ints[8], &ints[4], sizeof(int));
