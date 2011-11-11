@@ -86,8 +86,14 @@ int rcmp(void *a, void *b)
     v = (struct range *)b;
     if(r->lo < v->lo)
         return -1;
-    else if(r->lo == v->lo)
-        return 0;
+    else if(r->lo == v->lo) {
+        if(r->hi < v->hi)
+            return -1;
+        else if(r->hi == v->hi)
+            return 0;
+        else
+            return 1;
+    }
     else
         return 1;
 }

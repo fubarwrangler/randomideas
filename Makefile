@@ -7,4 +7,4 @@ rsort: rsort.c
 	gcc -Wall -o rsort rsort.c
 
 clean:
-	rm rsort interp
+	rm -f rsort interp
