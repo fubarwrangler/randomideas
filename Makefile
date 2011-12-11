@@ -1,10 +1,13 @@
+CC=gcc
+CFLAGS=-Wall -O2
+
 all: interp rsort
 
 interp: interp.c
-	gcc -Wall -o interp interp.c
+	$(CC) $(CFLAGS) -o interp interp.c
 
 rsort: rsort.c
-	gcc -Wall -o rsort rsort.c
+	$(CC) $(CFLAGS) -o rsort rsort.c
 
 clean:
 	rm -f rsort interp
