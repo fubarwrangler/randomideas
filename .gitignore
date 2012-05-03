@@ -2,3 +2,4 @@ rsort
 interp
 iniread/test*.cfg
 iniread/*.kdev*
+readline

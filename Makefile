@@ -1,7 +1,10 @@
 CC=gcc
-CFLAGS=-Wall -O2
+CFLAGS=-Wall -g
 
-all: interp rsort
+all: interp rsort readline
+
+readline: readline.c
+	$(CC) $(CFLAGS) -o readline readline.c
 
 interp: interp.c
 	$(CC) $(CFLAGS) -o interp interp.c
@@ -10,4 +13,4 @@ rsort: rsort.c
 	$(CC) $(CFLAGS) -o rsort rsort.c
 
 clean:
-	rm -f rsort interp
+	rm -f rsort interp readline
