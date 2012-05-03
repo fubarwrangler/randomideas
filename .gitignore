@@ -3,3 +3,9 @@ interp
 iniread/test*.cfg
 iniread/*.kdev*
 readline
+Makefile
+readline-test
+libmyreadline.so
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake

@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *resize(char *buf, size_t new)
+#include "readline.h"
+
+static char *resize(char *buf, size_t new)
 {
 	char *tmp = realloc(buf, new);
 	printf("---Resize to %d\n", (int)new);
@@ -10,13 +12,11 @@ char *resize(char *buf, size_t new)
 		exit(2);
 	return tmp;
 }
-
-char *readline(FILE *fp, int strip)
+char *readline_fp(FILE *fp, size_t *slen, char strip)
 {
-	int shrink_thresh = 73;
-	int nogrow_thresh = 4;
+	size_t len = 0;
 	static char *buf = NULL;
-	static int bufsize = 35;
+	static int bufsize = 80;
 	static int offset = 0;
 	static int n_nogrow = 0;
 
@@ -26,9 +26,8 @@ char *readline(FILE *fp, int strip)
 			return NULL;
 	}
 
-	while(fgets(buf + offset, bufsize - 1, fp) != NULL)	{
-
-		size_t len = strlen(buf);
+	while(fgets(buf + offset, bufsize - offset - 1, fp) != NULL)	{
+		len = strlen(buf);
 		if(buf[len - 1] != '\n' && !feof(fp))	{
 			bufsize *= 2;
 			buf = resize(buf, bufsize);
@@ -46,32 +45,9 @@ char *readline(FILE *fp, int strip)
 		n_nogrow++;
 		if(strip)
 			buf[len - 2] = '\0';
+		*slen = len;
 		return buf;
 	}
 	free(buf);
 	return NULL;
-}
-
-
-int main(int argc, char const *argv[])
-{
-	char *bf;
-	FILE *fp;
-
-	if(argc > 1)
-	 	fp = fopen(argv[1], "r");
-	else
-		fp = stdin;
-
-
-	if(fp == NULL)
-		return 1;
-
-	while((bf = readline(fp, 0)) != NULL)	{
-		printf("%s", bf);
-	}
-
-	fclose(fp);
-
-	return 0;
 }
