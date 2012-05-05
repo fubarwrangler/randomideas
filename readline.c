@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "readline.h"
+int init_bufsize = 78;
+int shrink_thresh = 73;
+int nogrow_thresh = 4;
+
 
 static char *resize(char *buf, size_t new)
 {
