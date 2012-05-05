@@ -16,16 +16,19 @@ int main(int argc, char const *argv[])
 	if(fp == NULL)
 		return 1;
 
-	readline_set_init_size(1232);
-	readline_set_shrink_thresh(12);
-	readline_set_nogrow_thresh(2);
+	readline_set_init_size(12);
+	readline_set_shrink_thresh(66);
+	readline_set_n_skip_shrink(3);
 
-	while((bf = readline_fp(fp, &a, 0)) != NULL)	{
+	while((bf = readline_fp(fp, &a)) != NULL)	{
 		printf("%s", bf);
+	}
+	if(readline_error())	{
+		return 1;
 	}
 
 	if(fp != stdin)
 		fclose(fp);
 
 	return 0;
-} 
+}
