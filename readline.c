@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-int _readl_init_buf = 78;
-int _readl_shrink_thres = 73;
+int _readl_init_buf = 80;
+int _readl_shrink_thres = 90;
 int _readl_skip_shrink = 4;
 char _readl_error = 0;
 char _readl_strip = 0;
 
-#define _READLINE_DEBUG
+// #define _READLINE_DEBUG
 
 static char *resize(char *buf, size_t new)
 {
@@ -49,29 +49,29 @@ char *readline_fp(FILE *fp, size_t *slen)
 			offset = len;
 			n_nogrow = 0;
 			continue;
-		}
-
-		offset = 0;
-		/* Shrink if we should and we fit */
-		if( (bufsize / 2 > _readl_shrink_thres) &&
-		    (n_nogrow > _readl_skip_shrink) &&
-		    (len < bufsize / 2)
-		  )	{
-
-			bufsize /= 2;
-			if((buf = resize(buf, bufsize)) == NULL)
-				return NULL;
-			n_nogrow = 0;
-		}
-
-		n_nogrow++;
-		if(_readl_strip)	{
-			buf[len - 1] = '\0';
-			*slen = len - 1;
 		} else {
-			*slen = len;
+			offset = 0;
+			/* Shrink if we should and we fit */
+			if( (bufsize / 2 > _readl_shrink_thres) &&
+			    (n_nogrow > _readl_skip_shrink) &&
+			    (len < bufsize / 2)
+			  )	{
+
+				bufsize /= 2;
+				if((buf = resize(buf, bufsize)) == NULL)
+					return NULL;
+				n_nogrow = 0;
+			}
+
+			n_nogrow++;
+			if(_readl_strip)	{
+				buf[len - 1] = '\0';
+				*slen = len - 1;
+			} else {
+				*slen = len;
+			}
+			return buf;
 		}
-		return buf;
 	}
 	if(!feof(fp))
 		_readl_error = 2;
