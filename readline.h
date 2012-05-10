@@ -63,4 +63,8 @@ char *readline(const char *fname, size_t *slen);
  */
 char *readline_fp(FILE *fp, size_t *slen);
 
+
+char *readline_continue(const char *fname, size_t *slen);
+
+
 #endif

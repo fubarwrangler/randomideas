@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "readline.h"
 
@@ -8,8 +9,9 @@ int main(int argc, char const *argv[])
 	size_t a;
 
 	if(argc > 1)	{
-		while((bf = readline(argv[1], &a)) != NULL)	{
-			printf("(%4d): %s", (int)a, bf);
+		while((bf = readline_continue(argv[1], &a)) != NULL)	{
+			printf("(%4d): %s\n", (int)a, bf);
+			free(bf);
 		}
 		if(readline_error())	{
 			puts(readline_errstr());

@@ -96,3 +96,54 @@ char *readline(const char *fname, size_t *slen)
 		fclose(fp);
 	return storage;
 }
+
+static size_t get_nend(char *str, char c)
+{
+	size_t n = 0;
+
+	while(*str)	{
+		if(*str++ == c)
+			n++;
+		else
+			n = 0;
+	}
+	return n;
+}
+
+char *readline_continue(const char *fname, size_t *slen)
+{
+	char *buf = NULL;
+	char *new_storage = NULL;
+	size_t len = 0, old_len = 0;
+	int old_strip = _readl_strip;
+
+	_readl_strip = 1;
+
+	while((buf = readline(fname, &len)) != NULL)	{
+		int n_slash = get_nend(buf, '\\');
+
+		if((new_storage = resize(new_storage, len + old_len + 1)) == NULL)
+			return NULL;
+
+		memmove(new_storage + old_len, buf, len);
+
+		if(n_slash == 0) { /* Zero */
+			new_storage[len + old_len] = '\0';
+			break;
+		} else if (n_slash % 2 == 0) { /* Even */
+			new_storage[len + old_len - (n_slash / 2)] = '\0';
+			len -= n_slash / 2;
+			break;
+		} else { /* Odd */
+			new_storage[len + old_len - ((n_slash + 1) / 2)] = '\0';
+			len -= ((n_slash + 1) / 2) - 1;
+		}
+		old_len += len - 1;
+	}
+
+	*slen = len + old_len;
+
+	_readl_strip = old_strip;
+
+	return new_storage;
+}
