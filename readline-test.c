@@ -12,7 +12,6 @@ int main(int argc, char const *argv[])
 		//readline_set_comment();
 		while((bf = readline_continue(argv[1], &a)) != NULL)	{
 			printf("(%4d): %s\n", (int)a, bf);
-			free(bf);
 		}
 		if(readline_error())	{
 			puts(readline_errstr());

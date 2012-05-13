@@ -126,9 +126,9 @@ static size_t get_nend(char *str, char c)
 char *readline_continue(const char *fname, size_t *slen)
 {
 	char *buf = NULL;
-	char *new_storage = NULL;
+	static size_t buf_s = 0;
+	static char *new_storage = NULL;
 	size_t len = 0, old_len = 0;
-	int old_strip = _readl_strip;
 
 	_readl_strip = 1;
 
@@ -141,29 +141,26 @@ char *readline_continue(const char *fname, size_t *slen)
 		memmove(new_storage + old_len, buf, len);
 
 		if(_readl_comment_skip != 0)	{
-			if(strchr(buf, _readl_comment_char) != NULL)	{
+			if(strchr(buf, _readl_comment_char) != NULL)
 				n_slash = 0;
-				printf("Comment: %s\n", buf);
-			}
 		}
 
 		if(n_slash == 0) { /* Zero */
 			new_storage[len + old_len] = '\0';
-			break;
+			*slen = len + old_len;
+			return new_storage;
 		} else if (n_slash % 2 == 0) { /* Even */
 			new_storage[len + old_len - (n_slash / 2)] = '\0';
 			len -= n_slash / 2;
-			break;
+			*slen = len + old_len;
+			return new_storage;
 		} else { /* Odd */
 			new_storage[len + old_len - ((n_slash + 1) / 2)] = '\0';
 			len -= ((n_slash + 1) / 2) - 1;
 		}
 		old_len += len - 1;
+		*slen = len + old_len;
 	}
-
-	*slen = len + old_len;
-
-	_readl_strip = old_strip;
-
-	return new_storage;
+	free(new_storage);
+	return NULL;
 }

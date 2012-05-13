@@ -24,9 +24,11 @@ char *_readl_err_map[] = {
 #define readline_set_n_skip_shrink(n) _readl_skip_shrink = n
 #define readline_set_comment_char(n) _readl_comment_char = n
 
+/* Set character that starts comment and if we check for that:
+ * Used by readline_continue to not continue if we are in a comment
+ */
 #define readline_set_comment() _readl_comment_skip = 1;
 #define readline_unset_comment() _readl_comment_skip = 0;
-
 
 /* Determine if and which errors occured */
 #define readline_error() (_readl_error != 0)
@@ -82,9 +84,7 @@ char *readline_fp(FILE *fp, size_t *slen);
  * n / 2 real ones and not continue the line.  Odd numbers are turned into
  * (n - 1) / 2 real backslashes and do continue the line.
  *
- * Returns: newly allocated storage containing the (possibly) continued lines
- *
- * WARNING: return valuemust be freed by the user.
+ * Returns: pointer to statically allocated buffer holding finished line
  *
  */
 char *readline_continue(const char *fname, size_t *slen);
