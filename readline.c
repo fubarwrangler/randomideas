@@ -7,6 +7,8 @@ int _readl_shrink_thres = 90;
 int _readl_skip_shrink = 4;
 char _readl_error = 0;
 char _readl_strip = 0;
+char _readl_comment_skip = 0;
+char _readl_comment_char = '#';
 
 // #define _READLINE_DEBUG
 
@@ -137,6 +139,13 @@ char *readline_continue(const char *fname, size_t *slen)
 			return NULL;
 
 		memmove(new_storage + old_len, buf, len);
+
+		if(_readl_comment_skip != 0)	{
+			if(strchr(buf, _readl_comment_char) != NULL)	{
+				n_slash = 0;
+				printf("Comment: %s\n", buf);
+			}
+		}
 
 		if(n_slash == 0) { /* Zero */
 			new_storage[len + old_len] = '\0';

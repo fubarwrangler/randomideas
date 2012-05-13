@@ -9,6 +9,7 @@ int main(int argc, char const *argv[])
 	size_t a;
 
 	if(argc > 1)	{
+		//readline_set_comment();
 		while((bf = readline_continue(argv[1], &a)) != NULL)	{
 			printf("(%4d): %s\n", (int)a, bf);
 			free(bf);

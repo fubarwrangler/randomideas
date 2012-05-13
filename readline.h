@@ -7,6 +7,8 @@ extern int _readl_shrink_thres;
 extern int _readl_skip_shrink;
 extern char _readl_error;
 extern char _readl_strip;
+extern char _readl_comment_skip;
+extern char _readl_comment_char;
 
 char *_readl_err_map[] = {
 	"readline: No error",
@@ -20,6 +22,11 @@ char *_readl_err_map[] = {
 #define readline_set_init_size(n) _readl_init_buf = n
 #define readline_set_shrink_thresh(n) _readl_shrink_thres = n
 #define readline_set_n_skip_shrink(n) _readl_skip_shrink = n
+#define readline_set_comment_char(n) _readl_comment_char = n
+
+#define readline_set_comment() _readl_comment_skip = 1;
+#define readline_unset_comment() _readl_comment_skip = 0;
+
 
 /* Determine if and which errors occured */
 #define readline_error() (_readl_error != 0)
@@ -28,6 +35,7 @@ char *_readl_err_map[] = {
 /* Control if we strip off the trailing '\n' from each line */
 #define readline_set_strip() _readl_strip = 1
 #define readline_unset_strip() _readl_strip = 0
+
 
 /** readline() -- read a file a line at a time, safe for very long lines, will
  *                only stop when it runs out of memory
