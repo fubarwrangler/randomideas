@@ -48,7 +48,6 @@ char *_readl_err_map[] = {
  *          On error, readline_error() returns true and readline_errstr()
  *          returns a pointer to an appropriate error message
  *
- *
  * Globals: parameters listed above affect how this function manages memory
  *    init_size: how large is the initial buffer -- defaults to 81 bytes
  *    shrink_thresh: will never shrink below this size, will bottom out at
@@ -64,6 +63,22 @@ char *readline(const char *fname, size_t *slen);
 char *readline_fp(FILE *fp, size_t *slen);
 
 
+/** readline_continue() -- read a line from a file but take a backslash at the
+ *                         end as meaning to append the next line to the end
+ *
+ *	@args -- same as for readline()
+ *
+ * An odd number of trailing backslashes signals this function to read the
+ * next line and append it to the end of the current one.  Multiple
+ * backslashes are treated as escaped so an even number will be turned into
+ * n / 2 real ones and not continue the line.  Odd numbers are turned into
+ * (n - 1) / 2 real backslashes and do continue the line.
+ *
+ * Returns: newly allocated storage containing the (possibly) continued lines
+ *
+ * WARNING: return valuemust be freed by the user.
+ *
+ */
 char *readline_continue(const char *fname, size_t *slen);
 
 

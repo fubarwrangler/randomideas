@@ -10,6 +10,13 @@ char _readl_strip = 0;
 
 // #define _READLINE_DEBUG
 
+/* resize() -- realloc a string to a new size safely
+ *	@buf, @new -- buffer to realloc / new size
+ *
+ * Sets error flag and frees buffer if an error occurs
+ *
+ * Returns: pointer to new resized buffer or NULL on error
+ */
 static char *resize(char *buf, size_t new)
 {
 	char *tmp = realloc(buf, new);
@@ -97,6 +104,10 @@ char *readline(const char *fname, size_t *slen)
 	return storage;
 }
 
+/* get_nend() -- count the occurrences of character @c at the end of @str
+ *	@str / @c - string to search through / character to search for
+ * Returns: count how many c's are at end of str
+ */
 static size_t get_nend(char *str, char c)
 {
 	size_t n = 0;
