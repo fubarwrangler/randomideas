@@ -10,6 +10,11 @@ extern char _readl_strip;
 extern char _readl_comment_skip;
 extern char _readl_comment_char;
 
+#define READLINE_OK         0
+#define READLINE_FILE_ERR   1
+#define READLINE_IO_ERR     2
+#define READLINE_MEM_ERR    3
+
 char *_readl_err_map[] = {
 	"readline: No error",
 	"readline: File open error",

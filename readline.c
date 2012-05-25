@@ -5,7 +5,7 @@
 int _readl_init_buf = 80;
 int _readl_shrink_thres = 90;
 int _readl_skip_shrink = 4;
-char _readl_error = 0;
+char _readl_error = READLINE_OK;
 char _readl_strip = 0;
 char _readl_comment_skip = 0;
 char _readl_comment_char = '#';
@@ -26,7 +26,7 @@ static char *resize(char *buf, size_t new)
 	fprintf(stderr, "---Resize to %d\n", (int)new);
 #endif
 	if(tmp == NULL)	{
-		_readl_error = 3;
+		_readl_error = READLINE_MEM_ERR;
 		free(buf);
 	}
 	return tmp;
@@ -42,8 +42,10 @@ char *readline_fp(FILE *fp, size_t *slen)
 
 	if(buf == NULL)	{
 		buf = malloc(_readl_init_buf);
-		if(buf == NULL)
+		if(buf == NULL)	{
+			_readl_error = READLINE_MEM_ERR;
 			return NULL;
+		}
 		bufsize = _readl_init_buf;
 	}
 
@@ -83,7 +85,7 @@ char *readline_fp(FILE *fp, size_t *slen)
 		}
 	}
 	if(!feof(fp))
-		_readl_error = 2;
+		_readl_error = READLINE_IO_ERR;
 	free(buf);
 	return NULL;
 }
@@ -96,7 +98,7 @@ char *readline(const char *fname, size_t *slen)
 
 	if(fp == NULL)	{
 		if((fp = fopen(fname, "r")) == NULL)	{
-			_readl_error = 1;
+			_readl_error = READLINE_FILE_ERR;
 			return NULL;
 		}
 	}
