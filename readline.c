@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "readline.h"
+
 int _readl_init_buf = 80;
 int _readl_shrink_thres = 90;
 int _readl_skip_shrink = 4;
@@ -9,6 +11,14 @@ char _readl_error = READLINE_OK;
 char _readl_strip = 0;
 char _readl_comment_skip = 0;
 char _readl_comment_char = '#';
+
+char *_readl_err_map[] = {
+	"readline: No error",
+	"readline: File open error",
+	"readline: File I/O error",
+	"readline: Memory allocation error",
+	"readline: BUG! Invalid error num",
+};
 
 // #define _READLINE_DEBUG
 
@@ -90,8 +100,8 @@ char *readline_fp(FILE *fp, size_t *slen)
 	return NULL;
 }
 
-
-char *readline(const char *fname, size_t *slen)
+static char *readline_skel_fopen(const char *fname, size_t *slen,
+								 char *(read_fn)(FILE *, size_t *))
 {
 	static FILE *fp = NULL;
 	char *storage;
@@ -102,11 +112,12 @@ char *readline(const char *fname, size_t *slen)
 			return NULL;
 		}
 	}
-	storage = readline_fp(fp, slen);
+	storage = read_fn(fp, slen);
 	if(storage == NULL)
 		fclose(fp);
 	return storage;
 }
+
 
 /* get_nend() -- count the occurrences of character @c at the end of @str
  *	@str / @c - string to search through / character to search for
@@ -125,7 +136,8 @@ static size_t get_nend(char *str, char c)
 	return n;
 }
 
-char *readline_continue(const char *fname, size_t *slen)
+
+char *readline_continue_fp(FILE *fp, size_t *slen)
 {
 	char *buf = NULL;
 	static size_t buf_s = 0;
@@ -134,7 +146,7 @@ char *readline_continue(const char *fname, size_t *slen)
 
 	_readl_strip = 1;
 
-	while((buf = readline(fname, &len)) != NULL)	{
+	while((buf = readline_fp(fp, &len)) != NULL)	{
 		int n_slash = get_nend(buf, '\\');
 
 		if((new_storage = resize(new_storage, len + old_len + 1)) == NULL)
@@ -165,4 +177,15 @@ char *readline_continue(const char *fname, size_t *slen)
 	}
 	free(new_storage);
 	return NULL;
+}
+
+
+char *readline(const char *fname, size_t *slen)
+{
+	return readline_skel_fopen(fname, slen, readline_fp);
+}
+
+char *readline_continue(const char *fname, size_t *slen)
+{
+	return readline_skel_fopen(fname, slen, readline_continue_fp);
 }

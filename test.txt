@@ -1,0 +1,12 @@
+This line does not
+continue on to this.
+
+But these should \
+run together \
+for a while.
+
+This one ends in a slash \\
+And this one in two \\\\
+
+But these continue with \\\
+a slash anyway

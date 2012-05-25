@@ -9,39 +9,33 @@ extern char _readl_error;
 extern char _readl_strip;
 extern char _readl_comment_skip;
 extern char _readl_comment_char;
+extern char *_readl_err_map[];
 
 #define READLINE_OK         0
 #define READLINE_FILE_ERR   1
 #define READLINE_IO_ERR     2
 #define READLINE_MEM_ERR    3
 
-char *_readl_err_map[] = {
-	"readline: No error",
-	"readline: File open error",
-	"readline: File I/O error",
-	"readline: Memory allocation error",
-	"readline: BUG! Invalid error num",
-};
-
 /* Sets the parameters described below in readline()'s comment */
-#define readline_set_init_size(n) _readl_init_buf = n
-#define readline_set_shrink_thresh(n) _readl_shrink_thres = n
-#define readline_set_n_skip_shrink(n) _readl_skip_shrink = n
-#define readline_set_comment_char(n) _readl_comment_char = n
+#define readline_set_init_size(n)		_readl_init_buf = n
+#define readline_set_shrink_thresh(n)	_readl_shrink_thres = n
+#define readline_set_n_skip_shrink(n)	_readl_skip_shrink = n
+#define readline_set_comment_char(n)	_readl_comment_char = n
 
 /* Set character that starts comment and if we check for that:
  * Used by readline_continue to not continue if we are in a comment
  */
-#define readline_set_comment() _readl_comment_skip = 1;
-#define readline_unset_comment() _readl_comment_skip = 0;
+#define readline_set_comment()		_readl_comment_skip = 1;
+#define readline_unset_comment()	_readl_comment_skip = 0;
 
 /* Determine if and which errors occured */
-#define readline_error() (_readl_error != 0)
-#define readline_errstr() _readl_err_map[_readl_error]
+#define readline_is_error()	(_readl_error != 0)
+#define readline_error()	(_readl_error)
+#define readline_errstr()	_readl_err_map[_readl_error]
 
 /* Control if we strip off the trailing '\n' from each line */
-#define readline_set_strip() _readl_strip = 1
-#define readline_unset_strip() _readl_strip = 0
+#define readline_set_strip()	_readl_strip = 1
+#define readline_unset_strip()	_readl_strip = 0
 
 
 /** readline() -- read a file a line at a time, safe for very long lines, will
@@ -93,6 +87,8 @@ char *readline_fp(FILE *fp, size_t *slen);
  *
  */
 char *readline_continue(const char *fname, size_t *slen);
+
+char *readline_continue_fp(FILE *fp, size_t *slen);
 
 
 #endif
