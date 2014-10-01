@@ -69,39 +69,49 @@ class RokuRemote(object):
         for letter in string:
             self.keypress("Lit_{0}".format(letter))
 
-# a-z, _, num(#), backspace(!), clear(*)
-letters = 'abcdefghijklmnopqrstuvwxyz_#!*'
+# a-z, _, switch($), backspace(!), clear(*)
+letters = 'abcdefghijklmnopqrstuvwxyz_$!*'
 
-# 1-9, 0, alpha(A), backspace(!), clear(*)
-numbers = '1234567890A!*'
+# 1-9, 0, switch($), backspace(!), clear(*)
+numbers = '1234567890$!*'
 
 # My sign, +0 is positive
 sign = lambda i: -1 if i < 0 else 1
 
 
-def best_move(dist, ref):
-    if abs(dist) > 15:
+def best_move(o, n, ref):
+    dist = mycompare(o, n, ref)
+    print 'comp: %d' % dist,
+    size = len(ref)
+    if abs(dist) > size / 2:
         dist = (abs(dist) - len(ref)) * sign(dist)
     return dist
 
+def mycompare(o, n, set):
+    return set.index(n) - set.index(o)
+
 
 def set_position(o, n):
-    print '%c -> %c' % (o, n)
-    if o.isalpha() and n.isalpha():
+    print '%c -> %c' % (o, n),
 
-        dist = best_move(ord(n) - ord(o), letters)
-        if abs(dist) > 15:
-            new_dist = 30 - abs(dist)
-            dist = -sign(dist) * new_dist
+    if (o.isalpha() and n.isalpha()) or (n.isdigit() and o.isdigit()):
+
+        dist = best_move(o, n, numbers if o.isdigit() else letters)
+        print 'move: %d' % dist
+        method = ['left', 'right'][dist > 0]
         if dist < 0:
             r.left(-dist)
         if dist > 0:
             r.right(dist)
-    #if o.isalpha() and n.isdigit():
-    #    r.keypress('right', ord(o) - ord('a') + 2)
-    #    r.keypress('select')
+    elif o.isalpha() and n.isdigit():
+        n = '!'
+        dist = best_move(o, n, numbers if o.isdigit() else letters)
+        print 'move to switch'
+        r.
 
-def youtube_type(roku, string, starting_key = 'a'):
+
+
+def youtube_type(roku, string, starting_key = '8'):
     last = starting_key
     for char in string.strip():
         set_position(last, char)
