@@ -69,8 +69,8 @@ class RokuRemote(object):
         for letter in string:
             self.keypress("Lit_{0}".format(letter))
 
-# a-z, _, switch($), backspace(!), clear(*)
-letters = 'abcdefghijklmnopqrstuvwxyz_$!*'
+# a-z, _(space), switch($), backspace(!), clear(*)
+letters = 'abcdefghijklmnopqrstuvwxyz $!*'
 
 # 1-9, 0, switch($), backspace(!), clear(*)
 numbers = '1234567890$!*'
@@ -91,36 +91,40 @@ def mycompare(o, n, set):
     return set.index(n) - set.index(o)
 
 
-def set_position(o, n):
+def set_position(o, n, r):
     print '%c -> %c' % (o, n),
 
-    if (o.isalpha() and n.isalpha()) or (n.isdigit() and o.isdigit()):
+    def move(dist):
+        # Future me: I'm sorry
+        getattr(r, ['left', 'right'][dist > 0])(abs(dist))
+
+    # As long as they're in the same character class (digit or ~digit)
+    if not (o.isdigit() ^ n.isdigit()):
 
         dist = best_move(o, n, numbers if o.isdigit() else letters)
         print 'move: %d' % dist
-        method = ['left', 'right'][dist > 0]
-        if dist < 0:
-            r.left(-dist)
-        if dist > 0:
-            r.right(dist)
-    elif o.isalpha() and n.isdigit():
-        n = '!'
-        dist = best_move(o, n, numbers if o.isdigit() else letters)
-        print 'move to switch'
-        r.
+
+        move(dist)
+
+    else:
+        dist = best_move(o, '$', numbers if o.isdigit() else letters)
+        print 'move to switch %d' % dist,
+        move(dist)
+        r.keypress('select')
+        dist = best_move('$', n, numbers if n.isdigit() else letters)
+        print 'move to final %d' % dist
+        move(dist)
 
 
-
-def youtube_type(roku, string, starting_key = '8'):
+def youtube_type(roku, string, starting_key = 'a'):
     last = starting_key
     for char in string.strip():
-        set_position(last, char)
-        time.sleep(0.05)
-        r.keypress('select')
+        set_position(last, char, roku)
+        roku.keypress('select')
         last = char
 
 
-r = RokuRemote('http://192.168.1.128:8060')
+roku = RokuRemote('http://192.168.1.128:8060')
 
-youtube_type(r, raw_input('Search:'))
+youtube_type(roku, raw_input('Search: '))
 
